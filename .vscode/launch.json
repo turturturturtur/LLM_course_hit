@@ -4,13 +4,25 @@
     // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
         {
             "name": "main",
             "type": "debugpy",
             "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal"
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "test",
+            "type": "debugpy",
+            "request": "launch",
+            "cwd": "/home/vepfs/LLM_course",
+            "program": "test/test_scaledDotProductAttention.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}" // 关键：这一行让 import 能够找到 model！
+            }
         }
     ]
 }

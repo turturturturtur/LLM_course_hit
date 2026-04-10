@@ -1,0 +1,19 @@
+.vscode/
+.claude/
+.pytest_cache
+Medical_Text/.complete
+test
+
+# 忽略所有目录下的 __pycache__ 文件夹
+**/__pycache__/
+__pycache__/
+
+# 忽略编译后的字节码文件
+*.py[cod]
+
+# 忽略 Python 动态库文件
+*.so
+
+# (可选) 忽略虚拟环境文件夹（如果你在项目里建了 venv）
+venv/
+.env/
