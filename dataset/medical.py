@@ -1,5 +1,6 @@
 from dataset import baseDataset
 import os.path as osp
+import torch
 
 class medicalDataset(baseDataset):
     def __init__(self, split:str,path:str):
@@ -17,7 +18,7 @@ class medicalDataset(baseDataset):
             data_raw = [f.strip() for f in file]
 
         self.labels = []
-        self.texts = [] # 修复1：改名叫 texts，防止和循环变量重名
+        self.texts = []
 
         for line in data_raw:
             if not line:
@@ -43,29 +44,51 @@ class medicalDataset(baseDataset):
         return len(self.labels)
 
     def __getitem__(self, idx):
-        # 如果已经被 Tokenize 了，就返回处理好的 Tensor
         if self.is_tokenized:
             return {
                 "input_ids": self.encodings["input_ids"][idx],
                 "attention_mask": self.encodings["attention_mask"][idx],
                 "labels": self.labels[idx],
             }
-        # 否则返回原始文本
         else:
             return {"text": self.texts[idx], "labels": self.labels[idx]}
 
 
     def tokenize(self, tokenizer):
-        # 因为我们之前在 collate_fn 里写了动态 Padding
-        # 这里可以直接 truncate，不需要 padding="max_length"，更省内存！
         self.encodings = tokenizer(
             self.texts,
             truncation=True,
             max_length=256,
-            # 删除了 padding="max_length" 和 .to("cuda")
         )
 
         self.is_tokenized = True
 
-        # 修复2：一定要 return self，保证它依然是个 Dataset 对象！
         return self
+
+
+def collate_fn(batch,pad_token_id=0):
+
+    input_ids_list = [item["input_ids"] for item in batch]
+    labels = [item["labels"] for item in batch]
+
+    max_len = max(len(ids) for ids in input_ids_list)
+
+    batch_input_ids = []
+    batch_attention_mask = []
+
+    for ids in input_ids_list:
+        pad_len = max_len - len(ids)
+
+        padded_ids = ids + [pad_token_id] * pad_len
+
+        mask = [1] * len(ids) + [0] * pad_len
+
+        batch_input_ids.append(padded_ids)
+        batch_attention_mask.append(mask)
+
+
+    return {
+        "input_ids": torch.tensor(batch_input_ids, dtype=torch.long),
+        "attention_mask": torch.tensor(batch_attention_mask, dtype=torch.long),
+        "labels": torch.tensor(labels, dtype=torch.long),
+    }
