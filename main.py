@@ -1,6 +1,6 @@
 """
-参考自https://github.com/turturturturtur/ImageBindDC
-⬆️这个仓库也是我自己写的，所以将来有些我就直接照抄了
+Ref: https://github.com/turturturturtur/ImageBindDC
+(Also written by me, so some parts are reused directly.)
 """
 
 import torch
@@ -28,7 +28,6 @@ from trainer import Trainer
 
 
 def main(args):
-    # Read from kaggle data, which can be loaded by python( pandans and numpy can't)
     file_path = args.file_path
     model_name = args.model_name
 
@@ -39,7 +38,7 @@ def main(args):
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     vocab_size = len(tokenizer)
 
-    print("正在构建 DataLoader...")
+    print("Building DataLoader...")
     train_dataset = train_dataset.tokenize(tokenizer=tokenizer)
     test_dataset = test_dataset.tokenize(tokenizer=tokenizer)
 
@@ -91,7 +90,6 @@ def main(args):
         device="cuda",
         args=args,
     )
-    print("开始训练！🚀")
 
     trainer.train()
 
@@ -101,34 +99,35 @@ if __name__ == "__main__":
         description="Medical Text Classification Training Script"
     )
     parser.add_argument(
-        "--file_path", type=str, default="Medical_Text", help="数据集所在的文件夹路径"
+        "--file_path", type=str, default="Medical_Text", help="Dataset folder path"
     )
     parser.add_argument(
         "--model_name",
         type=str,
         default="Qwen/Qwen3-8B",
-        help="用于加载 Tokenizer 的预训练模型名称",
+        help="Pretrained model name for tokenizer",
     )
     parser.add_argument(
-        "--d_model", type=int, default=1024, help="Transformer 的词向量维度"
+        "--d_model", type=int, default=1024, help="Transformer embedding dimension"
     )
-    parser.add_argument("--d_hidden", type=int, default=2048, help="FFN 隐藏层的维度")
+    parser.add_argument("--d_hidden", type=int, default=2048, help="FFN hidden dimension")
     parser.add_argument(
         "--num_head",
         type=int,
         default=16,
-        help="多头注意力的头数 (必须能被 d_model 整除)",
+        help="Number of attention heads (must divide d_model)",
     )
     parser.add_argument(
-        "--num_layer", type=int, default=32, help="Encoder Layer 的堆叠层数"
+        "--num_layer", type=int, default=32, help="Number of encoder layers"
     )
-    parser.add_argument("--max_len", type=int, default=4096, help="句子最大长度")
-    parser.add_argument("--num_classes", type=int, default=5, help="最终分类的类别数")
-    parser.add_argument("--dropout", type=float, default=0.1, help="Dropout 概率")
-    parser.add_argument("--batch_size", type=int, default=32, help="批次大小")
-    parser.add_argument("--epochs", type=int, default=10, help="训练轮数")
-    parser.add_argument("--lr", type=float, default=1e-4, help="学习率")
+    parser.add_argument("--max_len", type=int, default=4096, help="Max sequence length")
+    parser.add_argument("--num_classes", type=int, default=5, help="Number of classes")
+    parser.add_argument("--dropout", type=float, default=0.1, help="Dropout rate")
+    parser.add_argument("--batch_size", type=int, default=32, help="Batch size")
+    parser.add_argument("--epochs", type=int, default=10, help="Training epochs")
+    parser.add_argument("--lr", type=float, default=1e-4, help="Learning rate")
     parser.add_argument("--local_rank", default=-1, type=int)
+    parser.add_argument("--max_steps", type=int, default=-1, help="Max steps per epoch, -1 = no limit")
     parser = deepspeed.add_config_arguments(parser)
     args = parser.parse_args()
     main(args)

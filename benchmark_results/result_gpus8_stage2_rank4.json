@@ -1,0 +1,6 @@
+{
+  "rank": 4,
+  "peak_memory_gb": 11.462710857391357,
+  "avg_throughput_tok_per_sec": 43509.65752681678,
+  "num_steps": 50
+}

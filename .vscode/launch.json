@@ -13,6 +13,14 @@
             "justMyCode": false
         },
         {
+            "name": "lora",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "lora.py",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
             "name": "test",
             "type": "debugpy",
             "request": "launch",
